@@ -1,46 +1,19 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonMenuButton, IonList, IonItemSliding, IonItem, IonIcon, IonLabel, IonItemOptions, IonItemOption, IonActionSheet } from '@ionic/react';
 import { eyeOffOutline, eyeOutline, personOutline } from 'ionicons/icons';
 import React, { useState } from 'react';
+import { Student } from '../core/student';
+import { Presence } from '../core/presence';
+import { useStudents } from '../core/student-hook';
 
-enum Presence {
-  Unknown,
-  Absent,
-  Present
-}
-interface Student {
-  id: string;
-  firstName: string;
-  lastName: string;
-  birthDate?: Date;
-  parentName?: string;
-  parentEmail?: string;
-  parentPhone?: string;
-  photoUrl?: string;
-  status?: Presence;
-}
-
-
-const mockStudents: Student[] = [
-  { id: '1', firstName: 'Monique', lastName: 'Barrett', status: Presence.Absent },
-  { id: '2', firstName: 'Pauline', lastName: 'Davis', status: Presence.Present },
-  { id: '3', firstName: 'Heidi', lastName: 'Burke' },
-  { id: '4', firstName: 'Jennifer', lastName: 'Townsend' },
-  { id: '5', firstName: 'Casey', lastName: 'McBride' },
-  { id: '6', firstName: 'Diane', lastName: 'Rivera' },
-  { id: '7', firstName: 'Troy', lastName: 'Gutierrez' },
-  { id: '8', firstName: 'Priscilla', lastName: 'Little' },
-  { id: '9', firstName: 'Bobby', lastName: 'Robbins' },
-  { id: '10', firstName: 'Edmund', lastName: 'Gardner' }
-]
 
 const Students: React.FC = () => {
   const emptyStudent: Student = { id: '', firstName: '', lastName: '' };
-  const [students, setStudents] = useState(mockStudents);
+  const [students, addStudent, removeStudent] = useStudents();
   const [selectedStudent, setSelectedStudent] = useState(emptyStudent);
   const [showActionSheet, setShowActionSheet] = useState(false);
 
   function deleteStudent(student: Student) {
-    setStudents(students.filter(x => x.id !== student.id));
+    removeStudent();
   }
 
   async function markAbsent(student: Student) {
@@ -52,9 +25,7 @@ const Students: React.FC = () => {
   }
 
   async function studentDetails(student: Student) {
-    // this.router.navigateByUrl(`/student-info/${student.id}`, {
-    //   state: { student }
-    // })
+    // this.router.navigateByUrl(`/student-info/${student.id}`);
   }
 
   function clickStudent(student: Student) {
