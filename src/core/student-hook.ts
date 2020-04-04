@@ -15,17 +15,7 @@ const mockStudents: Student[] = [
   { id: '10', firstName: 'Edmund', lastName: 'Gardner' }
 ]
 
-const [students, setStudents] = useState(mockStudents);
-
-const addStudent = function (student: Student): void {
-  // Temporary - this will fail if student.id clashes with an existing element
-  setStudents([...students, student]);
-}
-
-const removeStudent = function (student: Student): void {
-  setStudents(students.filter(x => x.id !== student.id));
-}
-
 export const useStudents = function () {
-  return [students, addStudent, removeStudent];
+  const useStudentState = useState(mockStudents);
+  return useStudentState;
 }

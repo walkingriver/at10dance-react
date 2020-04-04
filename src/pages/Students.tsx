@@ -5,15 +5,14 @@ import { Student } from '../core/student';
 import { Presence } from '../core/presence';
 import { useStudents } from '../core/student-hook';
 
-
 const Students: React.FC = () => {
   const emptyStudent: Student = { id: '', firstName: '', lastName: '' };
-  const [students, addStudent, removeStudent] = useStudents();
+  const [students, setStudents] = useStudents();
   const [selectedStudent, setSelectedStudent] = useState(emptyStudent);
   const [showActionSheet, setShowActionSheet] = useState(false);
 
   function deleteStudent(student: Student) {
-    removeStudent();
+    setStudents(students.filter(x => x.id !== student.id));
   }
 
   async function markAbsent(student: Student) {
