@@ -1,6 +1,6 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonMenuButton, IonList, IonItemSliding, IonItem, IonIcon, IonLabel, IonItemOptions, IonItemOption, IonActionSheet } from '@ionic/react';
-import { eyeOffOutline, eyeOutline, personOutline } from 'ionicons/icons';
-import React, { useState } from 'react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonMenuButton, IonList, IonItemSliding, IonItem, IonIcon, IonLabel, IonItemOptions, IonItemOption, IonActionSheet, IonButtons, IonButton, IonAlert, IonToast } from '@ionic/react';
+import { eyeOffOutline, personOutline, eye, ellipsisHorizontalOutline, chevronForwardOutline, eyeOutline, trash } from 'ionicons/icons';
+import React, { useState, MouseEvent } from 'react';
 import { Student } from '../core/student';
 import { Presence } from '../core/presence';
 import { useStudents } from '../core/student-hook';
@@ -10,9 +10,12 @@ const Students: React.FC = () => {
   const [students, setStudents] = useStudents();
   const [selectedStudent, setSelectedStudent] = useState(emptyStudent);
   const [showActionSheet, setShowActionSheet] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
 
   function deleteStudent(student: Student) {
     setStudents(students.filter(x => x.id !== student.id));
+    setShowDeleteToast(true);
   }
 
   async function markAbsent(student: Student) {
@@ -23,21 +26,18 @@ const Students: React.FC = () => {
     student.status = Presence.Present;
   }
 
-  async function studentDetails(student: Student) {
-    // this.router.navigateByUrl(`/student-info/${student.id}`);
-  }
-
   function clickStudent(student: Student) {
     setSelectedStudent(student);
     setShowActionSheet(true);
   }
 
-
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonMenuButton></IonMenuButton>
+          <IonButtons slot="start">
+            <IonMenuButton></IonMenuButton>
+          </IonButtons>
           <IonTitle>Students</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -46,11 +46,19 @@ const Students: React.FC = () => {
           {students.map((student) => {
             return (
               <IonItemSliding key={student.id}>
-                <IonItem onClick={() => clickStudent(student)}>
+                <IonItem>
                   <IonIcon slot="start" icon={personOutline}></IonIcon>
                   <IonLabel>{student.lastName}, {student.firstName}</IonLabel>
-                  {student.status === Presence.Present && <IonIcon slot="end" icon={eyeOutline}></IonIcon>}
+                  {student.status === Presence.Present && <IonIcon slot="end" icon={eye}></IonIcon>}
                   {student.status === Presence.Absent && <IonIcon slot="end" icon={eyeOffOutline}></IonIcon>}
+                  <IonButtons slot="end">
+                    <IonButton onClick={() => clickStudent(student)}>
+                      <IonIcon slot="icon-only" icon={ellipsisHorizontalOutline}></IonIcon>
+                    </IonButton>
+                    <IonButton routerLink={`/student/${student.id}`} routerDirection="forward">
+                      <IonIcon slot="icon-only" icon={chevronForwardOutline}></IonIcon>
+                    </IonButton>
+                  </IonButtons>
                 </IonItem>
                 <IonItemOptions side="end">
                   <IonItemOption color="danger" onClick={() => deleteStudent(student)}>Delete</IonItemOption>
@@ -59,26 +67,22 @@ const Students: React.FC = () => {
             );
           })}
         </IonList>
-        <IonActionSheet isOpen={showActionSheet}
+        <IonActionSheet
+          isOpen={showActionSheet}
           header={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
-          onDidDismiss={() => setShowActionSheet(false)}
           buttons={[{
             text: 'Delete',
             role: 'destructive',
-            icon: 'trash',
-            handler: () => { deleteStudent(selectedStudent); }
+            icon: trash,
+            handler: () => { setShowDeleteAlert(true); }
           }, {
             text: 'Mark Present',
-            icon: 'eye-outline',
-            handler: async () => { await markPresent(selectedStudent); }
+            icon: eye,
+            handler: () => { markPresent(selectedStudent); }
           }, {
             text: 'Mark Absent',
-            icon: 'eye-off-outline',
-            handler: async () => { await markAbsent(selectedStudent); }
-          }, {
-            text: 'Details',
-            icon: 'document-text-outline',
-            handler: () => { studentDetails(selectedStudent); }
+            icon: eyeOffOutline,
+            handler: () => { markAbsent(selectedStudent); }
           }, {
             text: 'Cancel',
             icon: 'close',
@@ -87,9 +91,35 @@ const Students: React.FC = () => {
               console.log('Cancel clicked');
             }
           }]}
-        >
+          onDidDismiss={() => setShowActionSheet(false)}
+        />
 
-        </IonActionSheet>
+        <IonAlert
+          isOpen={showDeleteAlert}
+          onDidDismiss={() => setShowDeleteAlert(false)}
+          header="Delete this student?"
+          message="This operation cannot be undone."
+          subHeader={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
+          buttons={[
+            {
+              text: 'Delete',
+              handler: () => { deleteStudent(selectedStudent); }
+            }, {
+              text: 'Never mind',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            }
+          ]} />
+
+        <IonToast
+          isOpen={showDeleteToast}
+          onDidDismiss={() => setShowDeleteToast(false)}
+          message={`${selectedStudent.firstName} ${selectedStudent.lastName} has been deleted.`}
+          duration={3000}
+          position="top"
+        />
       </IonContent>
     </IonPage>
   );

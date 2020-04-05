@@ -1,11 +1,18 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonCard } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonCard, IonButtons, IonMenuButton } from '@ionic/react';
 import React from 'react';
 import './Home.css';
 
 const Home: React.FC = () => {
   return (
     <IonPage>
-      <IonContent>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonMenuButton></IonMenuButton>
+          </IonButtons>
+          <IonTitle>@10Dance Home</IonTitle>
+        </IonToolbar>
+      </IonHeader>      <IonContent>
         <IonCard>
           <IonCardHeader>
             <IonCardSubtitle>Classroom Attendance Manager</IonCardSubtitle>

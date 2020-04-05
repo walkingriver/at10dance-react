@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 
@@ -24,18 +24,25 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import Students from './pages/Students';
 import StudentInfo from './pages/StudentInfo';
+import Menu from './components/Menu';
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/home" component={Home} exact={true} />
-        <Route path="/students" component={Students} exact={true} />
-        <Route path="/student/:id" component={StudentInfo} exact={true} />
-        <Route exact path="/" render={() => <Redirect to="/home" />} />
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonSplitPane contentId="main">
+          <Menu />
+          <IonRouterOutlet id="main">
+            <Route path="/home" component={Home} exact={true} />
+            <Route path="/students" component={Students} exact={true} />
+            <Route path="/student/:id" component={StudentInfo} exact={true} />
+            <Route exact path="/" render={() => <Redirect to="/home" />} />
+          </IonRouterOutlet>
+        </IonSplitPane>
+      </IonReactRouter>
+    </IonApp>
+  );
+}
 
 export default App;
