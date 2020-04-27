@@ -1,34 +1,29 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonMenuButton, IonList, IonItemSliding, IonItem, IonIcon, IonLabel, IonItemOptions, IonItemOption, IonActionSheet, IonButtons, IonButton, IonAlert, IonToast } from '@ionic/react';
-import { eyeOffOutline, personOutline, eye, ellipsisHorizontalOutline, chevronForwardOutline, eyeOutline, trash } from 'ionicons/icons';
-import React, { useState, MouseEvent } from 'react';
+import { eyeOffOutline, personOutline, eye, ellipsisHorizontalOutline, chevronForwardOutline, trash } from 'ionicons/icons';
+import React, { useState } from 'react';
 import { Student } from '../core/student';
 import { Presence } from '../core/presence';
 import { useStudents } from '../core/student-hook';
 
-const Students: React.FC = () => {
+const Roster: React.FC = () => {
   const emptyStudent: Student = { id: '', firstName: '', lastName: '' };
   const [students, setStudents] = useStudents();
   const [selectedStudent, setSelectedStudent] = useState(emptyStudent);
-  const [showActionSheet, setShowActionSheet] = useState(false);
+  
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
-  function deleteStudent(student: Student) {
+  async function deleteStudent(student: Student) {
+    await presentToast();
     setStudents(students.filter(x => x.id !== student.id));
-    setShowDeleteToast(true);
-  }
-
-  async function markAbsent(student: Student) {
-    student.status = Presence.Absent;
-  }
-
-  async function markPresent(student: Student) {
-    student.status = Presence.Present;
   }
 
   function clickStudent(student: Student) {
     setSelectedStudent(student);
-    setShowActionSheet(true);
+  }
+
+  function presentToast() {
+    setShowDeleteToast(true);
   }
 
   return (
@@ -38,7 +33,7 @@ const Students: React.FC = () => {
           <IonButtons slot="start">
             <IonMenuButton></IonMenuButton>
           </IonButtons>
-          <IonTitle>Students</IonTitle>
+          <IonTitle>Class Roster</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
@@ -68,8 +63,9 @@ const Students: React.FC = () => {
           })}
         </IonList>
         <IonActionSheet
-          isOpen={showActionSheet}
+          isOpen={!!selectedStudent.id}
           header={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
+          onDidDismiss={() => setSelectedStudent(emptyStudent)}
           buttons={[{
             text: 'Delete',
             role: 'destructive',
@@ -78,20 +74,16 @@ const Students: React.FC = () => {
           }, {
             text: 'Mark Present',
             icon: eye,
-            handler: () => { markPresent(selectedStudent); }
+            handler: () => { selectedStudent.status = Presence.Present; }
           }, {
             text: 'Mark Absent',
             icon: eyeOffOutline,
-            handler: () => { markAbsent(selectedStudent); }
+            handler: () => { selectedStudent.status = Presence.Absent; }
           }, {
             text: 'Cancel',
             icon: 'close',
-            role: 'cancel',
-            handler: () => {
-              console.log('Cancel clicked');
-            }
+            role: 'cancel'
           }]}
-          onDidDismiss={() => setShowActionSheet(false)}
         />
 
         <IonAlert
@@ -116,7 +108,7 @@ const Students: React.FC = () => {
         <IonToast
           isOpen={showDeleteToast}
           onDidDismiss={() => setShowDeleteToast(false)}
-          message={`${selectedStudent.firstName} ${selectedStudent.lastName} has been deleted.`}
+          message="Student has been deleted."
           duration={3000}
           position="top"
         />
@@ -125,4 +117,4 @@ const Students: React.FC = () => {
   );
 };
 
-export default Students;
+export default Roster;

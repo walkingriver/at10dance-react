@@ -3,12 +3,13 @@ import React from 'react';
 import { Student } from '../core/student';
 import { useStudents } from '../core/student-hook';
 import { RouteComponentProps } from 'react-router';
+import { isPlatform } from '@ionic/react';
 
 const emptyStudent: Student = { id: '0', firstName: '', lastName: '', parentEmail: '', parentName: '', parentPhone: '' };
 
 interface StudentInfoPageProps extends RouteComponentProps<{
   id: string;
-}> {}
+}> { }
 
 const StudentInfo: React.FC<StudentInfoPageProps> = ({ match }) => {
   console.log('StudentID: ', match.params);
@@ -16,6 +17,7 @@ const StudentInfo: React.FC<StudentInfoPageProps> = ({ match }) => {
   const [students] = useStudents();
   const student = students.find(x => x.id === studentId) || emptyStudent;
   const pageTitle = `${student.firstName} ${student.lastName} (${studentId})`
+  const isMobile = isPlatform('mobileweb');
 
   return (
     <IonPage>
@@ -39,8 +41,10 @@ const StudentInfo: React.FC<StudentInfoPageProps> = ({ match }) => {
         </IonItem>
         <IonItem>
           <IonLabel position="stacked">Birth Date</IonLabel>
-          <IonInput type="date" value={student.birthDate}></IonInput>
-          <IonDatetime displayFormat="MM/DD/YYYY" min="1900-01-01" max="2012-12-31" value={student.birthDate}></IonDatetime>
+          {isMobile ||
+            <IonInput type="date" value={student.birthDate}></IonInput>}
+          {isMobile &&
+            <IonDatetime displayFormat="MM/DD/YYYY" min="1900-01-01" max="2012-12-31" value={student.birthDate}></IonDatetime>}
         </IonItem>
         <IonItem>
           <IonLabel position="stacked">Parent's Name</IonLabel>

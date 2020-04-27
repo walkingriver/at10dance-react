@@ -4,14 +4,14 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonMenu,
   IonMenuToggle,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
 } from '@ionic/react';
 import React from 'react';
-import { withRouter } from 'react-router-dom';
 import { people, home } from 'ionicons/icons';
-import './Menu.css';
 
 
 interface AppPage {
@@ -27,23 +27,27 @@ const appPages: AppPage[] = [
     icon: home
   },
   {
-    title: 'Students',
-    url: '/students',
+    title: 'Roster',
+    url: '/roster',
     icon: people
   }
 ];
 
 
-const Menu: React.FunctionComponent = () => {
+const Menu: React.FC = () => {
   return (
-    <IonMenu contentId="main" type="overlay">
+    <IonMenu contentId="main" side="start" type="reveal">
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Menu</IonTitle>
+        </IonToolbar>
+      </IonHeader>
       <IonContent>
-        <IonList id="inbox-list">
-          <IonListHeader>Menu</IonListHeader>
+        <IonList>
           {appPages.map((appPage, index) => {
             return (
               <IonMenuToggle key={index} autoHide={false}>
-                <IonItem routerLink={appPage.url} routerDirection="none" lines="none" detail={false}>
+                <IonItem routerLink={appPage.url} routerDirection="none" lines="none" >
                   <IonIcon slot="start" icon={appPage.icon} />
                   <IonLabel>{appPage.title}</IonLabel>
                 </IonItem>
@@ -56,4 +60,4 @@ const Menu: React.FunctionComponent = () => {
   );
 };
 
-export default withRouter(Menu);
+export default Menu;
