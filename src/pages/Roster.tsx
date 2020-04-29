@@ -6,25 +6,26 @@ import { Presence } from '../core/presence';
 import { useStudents } from '../core/student-hook';
 
 const Roster: React.FC = () => {
-  const emptyStudent: Student = { id: '', firstName: '', lastName: '' };
+  const emptyStudent: Student = {
+    id: '',
+    firstName: '',
+    lastName: ''
+  };
   const [students, setStudents] = useStudents();
   const [selectedStudent, setSelectedStudent] = useState(emptyStudent);
-  
+
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
 
-  async function deleteStudent(student: Student) {
-    await presentToast();
-    setStudents(students.filter(x => x.id !== student.id));
-  }
+function deleteStudent(student: Student) {
+  setStudents(students.filter(x => x.id !== student.id));
+  setShowDeleteToast(true);
+}
 
   function clickStudent(student: Student) {
     setSelectedStudent(student);
   }
 
-  function presentToast() {
-    setShowDeleteToast(true);
-  }
 
   return (
     <IonPage>
@@ -66,52 +67,53 @@ const Roster: React.FC = () => {
           isOpen={!!selectedStudent.id}
           header={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
           onDidDismiss={() => setSelectedStudent(emptyStudent)}
-          buttons={[{
-            text: 'Delete',
-            role: 'destructive',
-            icon: trash,
-            handler: () => { setShowDeleteAlert(true); }
-          }, {
-            text: 'Mark Present',
-            icon: eye,
-            handler: () => { selectedStudent.status = Presence.Present; }
-          }, {
-            text: 'Mark Absent',
-            icon: eyeOffOutline,
-            handler: () => { selectedStudent.status = Presence.Absent; }
-          }, {
-            text: 'Cancel',
-            icon: 'close',
-            role: 'cancel'
-          }]}
-        />
-
-        <IonAlert
-          isOpen={showDeleteAlert}
-          onDidDismiss={() => setShowDeleteAlert(false)}
-          header="Delete this student?"
-          message="This operation cannot be undone."
-          subHeader={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
           buttons={[
             {
               text: 'Delete',
-              handler: () => { deleteStudent(selectedStudent); }
+              role: 'destructive',
+              icon: trash,
+              handler: () => { setShowDeleteAlert(true); }
             }, {
-              text: 'Never mind',
-              role: 'cancel',
-              handler: () => {
-                console.log('Cancel clicked');
-              }
-            }
-          ]} />
-
-        <IonToast
-          isOpen={showDeleteToast}
-          onDidDismiss={() => setShowDeleteToast(false)}
-          message="Student has been deleted."
-          duration={3000}
-          position="top"
+              text: 'Mark Present',
+              icon: eye,
+              handler: () => { selectedStudent.status = Presence.Present; }
+            }, {
+              text: 'Mark Absent',
+              icon: eyeOffOutline,
+              handler: () => { selectedStudent.status = Presence.Absent; }
+            }, {
+              text: 'Cancel',
+              icon: 'close',
+              role: 'cancel'
+            }]}
         />
+
+<IonAlert
+  isOpen={showDeleteAlert}
+  onDidDismiss={() => setShowDeleteAlert(false)}
+  header="Delete this student?"
+  message="This operation cannot be undone."
+  subHeader={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
+  buttons={[
+    {
+      text: 'Delete',
+      handler: () => { deleteStudent(selectedStudent); }
+    }, {
+      text: 'Never mind',
+      role: 'cancel',
+      handler: () => {
+        console.log('Cancel clicked');
+      }
+    }
+  ]} />
+
+<IonToast
+  isOpen={showDeleteToast}
+  onDidDismiss={() => setShowDeleteToast(false)}
+  message="Student has been deleted."
+  duration={3000}
+  position="top"
+/>
       </IonContent>
     </IonPage>
   );
